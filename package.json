@@ -9,13 +9,19 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "cron-explainer.helloWorld",
-        "title": "Hello World"
+        "command": "cron-explainer.explain",
+        "title": "Explain cron"
+      },
+      {
+        "command": "cron-explainer.validate",
+        "title": "Validate cron"
       }
     ]
   },
