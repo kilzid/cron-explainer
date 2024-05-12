@@ -1,3 +1,6 @@
+import cronstrue from "cronstrue";
+
 export function explainCronExpression(cronExpression: string): string {
-  return `This cron expression ("${cronExpression}") runs at...`;
+  const duration = cronstrue.toString(cronExpression);
+  return `This cron expression runs ${duration.toLowerCase()}.`;
 }
