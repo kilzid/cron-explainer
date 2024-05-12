@@ -2,7 +2,22 @@
   "name": "cron-explainer",
   "displayName": "cron explainer",
   "description": "a cron explainer",
-  "version": "0.0.1",
+  "license": "MIT",
+  "homepage": "https://github.com/kilzid/cron-explainer",
+  "author": {
+    "name": "Doron Kilzi",
+    "url": "https://github.com/kilzid"
+  },
+  "publisher": "kilzid",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kilzid/cron-explainer.git"
+  },
+  "keywords": [
+    "cron"
+  ],
+  "icon": "./assets/icon.jpeg",
   "engines": {
     "vscode": "^1.89.0"
   },
