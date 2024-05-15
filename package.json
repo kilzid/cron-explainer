@@ -9,7 +9,7 @@
     "url": "https://github.com/kilzid"
   },
   "publisher": "kilzid",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/kilzid/cron-explainer.git"
@@ -49,7 +49,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "publish": "vsce login && npm run package && vsce package && vsce publish"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
