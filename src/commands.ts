@@ -7,7 +7,6 @@ export async function explain() {
     placeHolder: "Type in your cron expression to get an explanation",
   });
 
-  // regex test the user input
   if (!userResponse || !CRON_REGEX.test(userResponse)) {
     vscode.window.showErrorMessage("Invalid cron expression");
     return;
@@ -20,6 +19,7 @@ export async function explain() {
 }
 
 export async function validate() {
+  // todo: kilzi: should call validateCronExpression from utils
   const userResponse = await vscode.window.showInputBox({
     placeHolder: "Type in your cron expression to validate it",
   });

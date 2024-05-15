@@ -20,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     "cron-explainer.validate",
     validateCommand
   );
+  context.subscriptions.push(disposableValidate);
 }
 
 export function deactivate() {}
