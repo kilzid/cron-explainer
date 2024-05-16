@@ -46,68 +46,132 @@ function validateMinutesOrHours(value: string, type: "minutes" | "hours") {
 
   const parts = value.split(",");
   const results = parts.map((part) => {
-    if (part.includes("/")) {
-      const [start, step, ...rest] = part.split("/");
+    if (part.includes("-")) {
+      // i.e "0-6"
+      let [start, end, ...rest] = part.split("-");
       if (rest.length > 0) {
+        // i.e "0-6-7"
         return { valid: false, message: `invalid ${type} part` };
       }
-      const startAsNumber = parseInt(start);
-      const stepAsNumber = parseInt(step);
-      if (isNaN(startAsNumber) || isNaN(stepAsNumber)) {
+
+      if (start.includes("/")) {
+        // i.e "0/2-6"
         return {
           valid: false,
-          message: "start and step values must be numbers",
+          message: `in range, start value cannot contain "/"`,
         };
       }
-      if (startAsNumber < 0 || startAsNumber > maxValue) {
-        return {
-          valid: false,
-          message: `start value must be between 0 and ${maxValue}`,
-        };
+
+      let step;
+      if (end.includes("/")) {
+        // i.e "0-6/2"
+        if (end.split("/").length > 2) {
+          // i.e "0-6/2/3"
+          return { valid: false, message: `invalid ${type} part` };
+        }
+        [end, step] = end.split("/");
       }
-      if (stepAsNumber < 1 || stepAsNumber > maxValue) {
-        return {
-          valid: false,
-          message: `step value must be between 1 and ${maxValue}`,
-        };
-      }
-    } else if (part.includes("-")) {
-      const [start, end, ...rest] = part.split("-");
-      if (rest.length > 0) {
-        return { valid: false, message: `invalid ${type} part` };
-      }
-      const startAsNumber = parseInt(start);
-      const endAsNumber = parseInt(end);
-      if (isNaN(startAsNumber) || isNaN(endAsNumber)) {
+
+      start = trimLeadingZeros(start);
+      end = trimLeadingZeros(end);
+      const startAsNumber = parseInt(start, 10);
+      const endAsNumber = parseInt(end, 10);
+      if (
+        isNaN(startAsNumber) ||
+        isNaN(endAsNumber) ||
+        startAsNumber.toString() !== start ||
+        endAsNumber.toString() !== end
+      ) {
+        // "0-a" or "a-6"
         return {
           valid: false,
           message: "start and end values must be numbers",
         };
       }
       if (startAsNumber < 0 || startAsNumber > maxValue) {
+        // "-3-6" or "65-90"
         return {
           valid: false,
           message: `start value must be between 0 and ${maxValue}`,
         };
       }
       if (endAsNumber < 0 || endAsNumber > maxValue) {
+        // "20-65"
         return {
           valid: false,
           message: `end value must be between 0 and ${maxValue}`,
         };
       }
       if (startAsNumber >= endAsNumber) {
+        // "6-3"
         return {
           valid: false,
           message: "end value must be greater than start value",
         };
       }
+
+      if (step) {
+        step = trimLeadingZeros(step);
+        const stepAsNumber = parseInt(step, 10);
+        if (isNaN(stepAsNumber) || stepAsNumber.toString() !== step) {
+          // "0-6/a" or "0-6/3a"
+          return { valid: false, message: "step value must be a number" };
+        }
+        if (stepAsNumber < 1 || stepAsNumber > maxValue) {
+          // "0-6/-1" or "0-6/65"
+          return {
+            valid: false,
+            message: `step value must be between 1 and ${maxValue}`,
+          };
+        }
+      }
+    } else if (part.includes("/")) {
+      //i.e  "0/2"
+      let [start, step, ...rest] = part.split("/");
+      if (rest.length > 0) {
+        // i.e "0/2/3"
+        return { valid: false, message: `invalid ${type} part` };
+      }
+      start = trimLeadingZeros(start);
+      step = trimLeadingZeros(step);
+      const startAsNumber = parseInt(start, 10);
+      const stepAsNumber = parseInt(step, 10);
+      if (
+        isNaN(startAsNumber) ||
+        isNaN(stepAsNumber) ||
+        startAsNumber.toString() !== start ||
+        stepAsNumber.toString() !== step
+      ) {
+        // "0/a" or "a/2"
+        return {
+          valid: false,
+          message: "start and step values must be numbers",
+        };
+      }
+      if (startAsNumber < 0 || startAsNumber > maxValue) {
+        // i.e "-3/2" or "65/2"
+        return {
+          valid: false,
+          message: `start value must be between 0 and ${maxValue}`,
+        };
+      }
+      if (stepAsNumber < 1 || stepAsNumber > maxValue) {
+        // i.e "2/-1" or "2/65"
+        return {
+          valid: false,
+          message: `step value must be between 1 and ${maxValue}`,
+        };
+      }
     } else {
-      const partAsNumber = parseInt(part);
-      if (isNaN(partAsNumber)) {
+      // i.e "5"
+      part = trimLeadingZeros(part);
+      const partAsNumber = parseInt(part, 10);
+      if (isNaN(partAsNumber) || partAsNumber.toString() !== part) {
+        // i.e "a"
         return { valid: false, message: "part value must be a number" };
       }
       if (partAsNumber < 0 || partAsNumber > maxValue) {
+        // i.e "-1" or "65"
         return {
           valid: false,
           message: `part value must be between 0 and ${maxValue}`,
@@ -130,4 +194,11 @@ function validateMinutes(minutes: string): { valid: boolean; message: string } {
 
 function validateHours(hours: string): { valid: boolean; message: string } {
   return validateMinutesOrHours(hours, "hours");
+}
+
+function trimLeadingZeros(text: string) {
+  while (text.startsWith("0") && text.length > 1) {
+    text = text.slice(1);
+  }
+  return text;
 }
